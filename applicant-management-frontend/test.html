@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Applicant Management System - Test Page</h1>
+    
+    <div class="test-section">
+        <h2>🚀 Application Status</h2>
+        <p>Your development server is running at: <strong>http://localhost:5173</strong></p>
+        <p id="status">Checking application status...</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Troubleshooting Steps</h2>
+        <ol>
+            <li><strong>Check Browser Console:</strong> Press F12 and look for errors</li>
+            <li><strong>Verify Network Tab:</strong> Check if any files are failing to load</li>
+            <li><strong>Clear Browser Cache:</strong> Press Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</li>
+            <li><strong>Check Terminal:</strong> Look for any error messages in your terminal</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>⚡ Quick Fixes</h2>
+        <button onclick="location.reload()">🔄 Reload Page</button>
+        <button onclick="clearCache()">🗑️ Clear Cache & Reload</button>
+        <button onclick="checkConsole()">🔍 Check Console</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 What to Look For</h2>
+        <ul>
+            <li>✅ No JavaScript errors in console</li>
+            <li>✅ All CSS files loading properly</li>
+            <li>✅ React components rendering</li>
+            <li>✅ Applicant dashboard visible</li>
+        </ul>
+    </div>
+
+    <script>
+        function clearCache() {
+            if (confirm('This will clear cache and reload. Continue?')) {
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        for (let name of names) caches.delete(name);
+                    });
+                }
+                location.reload(true);
+            }
+        }
+
+        function checkConsole() {
+            console.log('=== APPLICANT MANAGEMENT SYSTEM DEBUG ===');
+            console.log('URL:', window.location.href);
+            console.log('User Agent:', navigator.userAgent);
+            console.log('Timestamp:', new Date().toISOString());
+            console.log('=========================================');
+            alert('Check the browser console (F12) for debug information');
+        }
+
+        // Check if the main application is accessible
+        fetch('/')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('status').innerHTML = '<span class="success">✅ Application server is responding</span>';
+                } else {
+                    document.getElementById('status').innerHTML = '<span class="warning">⚠️ Application server responded with status: ' + response.status + '</span>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('status').innerHTML = '<span class="error">❌ Cannot connect to application server. Make sure npm run dev is running.</span>';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Management System</title>
+    <style>
+        /* CSS Variables and Design System */
+        :root {
+            /* Colors */
+            --color-primary: #3b82f6;
+            --color-primary-dark: #2563eb;
+            --color-primary-light: #dbeafe;
+            --color-secondary: #64748b;
+            --color-secondary-dark: #475569;
+            --color-secondary-light: #f1f5f9;
+            
+            /* Neutral Colors */
+            --color-neutral-50: #fafafa;
+            --color-neutral-100: #f5f5f5;
+            --color-neutral-200: #e5e5e5;
+            --color-neutral-300: #d4d4d4;
+            --color-neutral-400: #a3a3a3;
+            --color-neutral-500: #737373;
+            --color-neutral-600: #525252;
+            --color-neutral-700: #404040;
+            --color-neutral-800: #262626;
+            --color-neutral-900: #171717;
+            
+            /* Status Colors */
+            --color-status-success: #10b981;
+            --color-status-success-light: #d1fae5;
+            --color-status-warning: #f59e0b;
+            --color-status-warning-light: #fef3c7;
+            --color-status-error: #ef4444;
+            --color-status-error-light: #fee2e2;
+            --color-status-info: #3b82f6;
+            --color-status-info-light: #dbeafe;
+            
+            /* Background & Text */
+            --color-background: #ffffff;
+            --color-background-secondary: #f9fafb;
+            --color-text-primary: #111827;
+            --color-text-secondary: #6b7280;
+            --color-border: #e5e7eb;
+            
+            /* Typography */
+            --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --line-height-tight: 1.25;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.75;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* Border Radius */
+            --border-radius-sm: 0.25rem;
+            --border-radius-md: 0.375rem;
+            --border-radius-lg: 0.5rem;
+            --border-radius-xl: 0.75rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-normal: 250ms ease-in-out;
+            
+            /* Z-index */
+            --z-dropdown: 1000;
+            --z-sticky: 1020;
+            --z-fixed: 1030;
+            --z-modal: 1040;
+            --z-popover: 1050;
+            --z-tooltip: 1060;
+            
+            /* Breakpoints */
+            --breakpoint-sm: 640px;
+            --breakpoint-md: 768px;
+            --breakpoint-lg: 1024px;
+            --breakpoint-xl: 1280px;
+            
+            /* Container */
+            --container-max-width: 1200px;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: #0f172a;
+                --color-background-secondary: #1e293b;
+                --color-text-primary: #f8fafc;
+                --color-text-secondary: #cbd5e1;
+                --color-border: #334155;
+            }
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text-primary);
+            background-color: var(--color-background);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--color-neutral-200);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-base);
+            line-height: 1;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--color-primary-light);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: var(--font-size-sm);
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        /* Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-base);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .status-pending {
+            background-color: var(--color-status-warning-light);
+            color: var(--color-status-warning);
+        }
+
+        .status-interview {
+            background-color: var(--color-status-info-light);
+            color: var(--color-status-info);
+        }
+
+        .status-offered {
+            background-color: var(--color-status-success-light);
+            color: var(--color-status-success);
+        }
+
+        .status-rejected {
+            background-color: var(--color-status-error-light);
+            color: var(--color-status-error);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-modal);
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--color-background);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Responsive Grid */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        /* Focus Styles */
+        :focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Scroll Behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-neutral-400);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-neutral-500);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="module">
+        // Simple React-like implementation for demo purposes
+        const root = document.getElementById('root');
+        
+        // Mock data
+        const mockApplicants = [
+            {
+                id: '1',
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+                phone: '(555) 123-4567',
+                position: 'Senior Software Engineer',
+                department: 'Engineering',
+                location: 'San Francisco, CA',
+                experience: 5,
+                skills: ['React', 'TypeScript', 'Node.js', 'Python'],
+                education: 'Bachelor of Science in Computer Science',
+                workAuthorization: 'US Citizen',
+                status: 'Interview',
+                rating: 4.5,
+                notes: 'Strong technical background, excellent communication skills',
+                createdAt: new Date('2024-01-15'),
+                updatedAt: new Date('2024-01-20')
+            },
+            {
+                id: '2',
+                name: 'Jane Smith',
+                email: 'jane.smith@example.com',
+                phone: '(555) 987-6543',
+                position: 'Product Manager',
+                department: 'Product',
+                location: 'New York, NY',
+                experience: 3,
+                skills: ['Product Strategy', 'Agile', 'Data Analysis', 'UX Design'],
+                education: 'Master of Business Administration',
+                workAuthorization: 'US Citizen',
+                status: 'Pending',
+                rating: 4.0,
+                notes: 'Great product sense, strong leadership qualities',
+                createdAt: new Date('2024-01-18'),
+                updatedAt: new Date('2024-01-18')
+            },
+            {
+                id: '3',
+                name: 'Mike Johnson',
+                email: 'mike.johnson@example.com',
+                phone: '(555) 456-7890',
+                position: 'Data Scientist',
+                department: 'Data Science',
+                location: 'Austin, TX',
+                experience: 2,
+                skills: ['Python', 'Machine Learning', 'SQL', 'R'],
+                education: 'Master of Science in Data Science',
+                workAuthorization: 'H1-B',
+                status: 'Offered',
+                rating: 4.8,
+                notes: 'Exceptional analytical skills, published researcher',
+                createdAt: new Date('2024-01-10'),
+                updatedAt: new Date('2024-01-22')
+            }
+        ];
+
+        // Simple component rendering
+        function renderApp() {
+            root.innerHTML = `
+                <div class="container" style="padding: 2rem 0;">
+                    <!-- Header -->
+                    <div style="margin-bottom: 2rem;">
+                        <h1 style="margin-bottom: 0.5rem;">Applicant Management</h1>
+                        <p style="color: var(--color-text-secondary);">
+                            Manage and track job applicants across your organization
+                        </p>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-4" style="margin-bottom: 2rem;">
+                        <div class="card">
+                            <div style="padding: 1.5rem; text-align: center;">
+                                <h3 style="font-size: 2rem; color: var(--color-primary); margin-bottom: 0.5rem;">
+                                    ${mockApplicants.length}
+                                </h3>
+                                <p style="color: var(--color-text-secondary);">Total Applicants</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="padding: 1.5rem; text-align: center;">
+                                <h3 style="font-size: 2rem; color: var(--color-status-info); margin-bottom: 0.5rem;">
+                                    ${mockApplicants.filter(a => a.status === 'Interview').length}
+                                </h3>
+                                <p style="color: var(--color-text-secondary);">In Interview</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="padding: 1.5rem; text-align: center;">
+                                <h3 style="font-size: 2rem; color: var(--color-status-success); margin-bottom: 0.5rem;">
+                                    ${mockApplicants.filter(a => a.status === 'Offered').length}
+                                </h3>
+                                <p style="color: var(--color-text-secondary);">Offers Made</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="padding: 1.5rem; text-align: center;">
+                                <h3 style="font-size: 2rem; color: var(--color-status-warning); margin-bottom: 0.5rem;">
+                                    ${mockApplicants.filter(a => a.status === 'Pending').length}
+                                </h3>
+                                <p style="color: var(--color-text-secondary);">Pending Review</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <input type="text" class="form-input" placeholder="Search by name, email, or skills...">
+                            </div>
+                            <button class="btn btn-outline">Filter</button>
+                            <button class="btn btn-primary">Add Applicant</button>
+                        </div>
+                    </div>
+
+                    <!-- Applicant Cards -->
+                    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem;">
+                        ${mockApplicants.map(applicant => `
+                            <div class="card">
+                                <div style="padding: 1.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                        <div style="flex: 1;">
+                                            <h3 style="margin-bottom: 0.25rem;">${applicant.name}</h3>
+                                            <p style="color: var(--color-text-secondary); font-size: 0.875rem;">
+                                                ${applicant.email}
+                                            </p>
+                                        </div>
+                                        <span class="status-badge status-${applicant.status.toLowerCase()}">
+                                            ${applicant.status}
+                                        </span>
+                                    </div>
+
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <span style="color: var(--color-text-secondary);">💼</span>
+                                            <span style="font-size: 0.875rem;">
+                                                ${applicant.position} • ${applicant.experience === 0 ? 'Entry Level' : `${applicant.experience} year${applicant.experience > 1 ? 's' : ''}`}
+                                            </span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <span style="color: var(--color-text-secondary);">📍</span>
+                                            <span style="font-size: 0.875rem;">${applicant.location}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--color-text-secondary);">📅</span>
+                                            <span style="font-size: 0.875rem;">
+                                                Applied ${applicant.createdAt.toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    ${applicant.skills.length > 0 ? `
+                                        <div style="margin-bottom: 1rem;">
+                                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                                ${applicant.skills.slice(0, 3).map(skill => `
+                                                    <span style="
+                                                        background-color: var(--color-neutral-100);
+                                                        color: var(--color-text-secondary);
+                                                        padding: 0.25rem 0.5rem;
+                                                        border-radius: var(--border-radius-sm);
+                                                        font-size: 0.75rem;
+                                                    ">
+                                                        ${skill}
+                                                    </span>
+                                                `).join('')}
+                                                ${applicant.skills.length > 3 ? `
+                                                    <span style="
+                                                        background-color: var(--color-neutral-200);
+                                                        color: var(--color-text-secondary);
+                                                        padding: 0.25rem 0.5rem;
+                                                        border-radius: var(--border-radius-sm);
+                                                        font-size: 0.75rem;
+                                                    ">
+                                                        +${applicant.skills.length - 3} more
+                                                    </span>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                            <span style="color: var(--color-status-warning);">⭐</span>
+                                            <span style="font-weight: 500;">${applicant.rating}/5</span>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="btn btn-outline btn-sm">View</button>
+                                            <button class="btn btn-outline btn-sm">Edit</button>
+                                            <button class="btn btn-outline btn-sm" style="color: var(--color-status-error);">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initial render
+        renderApp();
+    </script>
+</body>
+</html>
